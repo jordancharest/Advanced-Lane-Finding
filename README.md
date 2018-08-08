@@ -106,7 +106,7 @@ This is done in Step 5. To add the result back onto the original image, I simply
 
 ### Pipeline
 
-Here's a [link to my video result](./test_videos_output/project_video.mp4)
+Here's a [link to my video result](./test_videos_output/result.mp4)
 
 ---
 
