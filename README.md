@@ -19,9 +19,10 @@ The goals / steps of this project are the following:
 [original]: ./test_images/straight_lines1.jpg "Original"
 [thresholded]: ./writeup_images/thresholded.png "Binary Threshold"
 [warped]: ./writeup_images/warped.png "Perspective Transform"
-[image5]: ./examples/color_fit_lines.jpg "Fit Visual"
-[image6]: ./examples/example_output.jpg "Output"
-[video1]: ./project_video.mp4 "Video"
+[thresh_warp]: ./writeup_images/thresh_and_warp.png "Thresholded and Warped"
+[painted_lane]: ./writeup_images/painted_lane.png "Painted Lane"
+[final]:./writeup_images/final.png
+[video1]: ./test_videos_output/result.mp4 "Video"
 
 ### Camera Calibration
 
@@ -79,34 +80,38 @@ I verified that my perspective transform was working as expected by drawing the 
 
 ![alt text][warped]
 
-#### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
+The entire pipeline so far looks like this:
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+![alt_text][thresh_warp]
 
-![alt text][image5]
+#### 4. Identify lane-line pixels and fitting their positions with a polynomial
 
-#### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
+This method is found in Step 4 of the jupyter notebook. To find the lanes, first I took a histogram of the thresholded and warped image. The I used a sliding window approach, centered around the two histogram peaks (one on each side of the image) to collect the pixel coordinates that are non-zero. After collecting non-zero pixel coordinates, I fed those points into the numpy polyfit function to get a polynomial. I then drew each polynomial onto the image with separate colors and filled the space in the middle with green. This is painted onto an image that still has transformed perspective, and overlayed onto the original later. At this point, the processed image looks like this:
 
-I did this in lines # through # in my code in `my_other_file.py`
+![alt text][painted_lane]
 
-#### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
+In the same function, I calculated the center distance in the same function by determining the offset between the center of the image and the average location of the two lanes.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+#### 5. Calculate the radius of curvature of the lane
 
-![alt text][image6]
+In Step 6 I calculated the radius of curvature of the lane at the bottom of the image (i.e. the current location of the car) for each lane, averaged them together, and wrote the result on the image.
+
+#### 6. The result plotted back down onto the road
+
+This is done in Step 5. To add the result back onto the original image, I simply do a perspective transform again, but with the inverse matrix. Then I overlay the transformed image onto the original using `cv2.addWeighted()` and write the center distance onto the image. This is the final result:
+
+![alt text][final]
 
 ---
 
-### Pipeline (video)
+### Pipeline
 
-#### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
-
-Here's a [link to my video result](./project_video.mp4)
+Here's a [link to my video result](./test_videos_output/project_video.mp4)
 
 ---
 
 ### Discussion
 
-#### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
+#### 1. Where will the pipeline likely fail?  How could it be more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+I spent too much time getting the binary thresholding to work well for the image I chose to test on and forgot to test it out on different images with different challanges, such as one where the pavement color changes in a line along the middle of the lane. So the pipline works pretty well when the pavement changes to concrete color and shadows due to the color thresholding and gradient thresholding technique I used, but there are plenty of different scenarios where it breaks down. Second, I had no method to drop the lanes and start from scratch if it appeared to fit a lane that didn't make sense. For the project video this was fine, but for more challenging videos, if the lane position is drawn way off in one frame, it has a tendency to stay there for quite awhile since I look around the previously detected lane for the lane in the next frame. This would of course be catastrophic. Luckily, engineer spend more than just a couple weeks refining their techniques before it is considered ready to run on a real autonomous vehicle.
