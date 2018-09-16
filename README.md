@@ -45,7 +45,7 @@ To demonstrate this step, I will describe the image processing pipeline using on
 
 #### 2. Using color transforms, gradients or other methods to create a thresholded binary image
 
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at in Step 3 of the jupyter notebook). I found success by converting the image to HLS colorspace and thresholding the x-gradient of the L-channel and directly thresholding the S-channel.  Here's an example of my output for this step.
+I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at in Step 3 of the jupyter notebook). I found success by converting the image to HSL colorspace and thresholding the x-gradient of the L-channel and directly thresholding the S-channel.  Here's an example of my output for this step.
 
 ![alt text][thresholded]
 
